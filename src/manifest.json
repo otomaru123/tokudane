@@ -1,0 +1,22 @@
+{
+    "name": "トクダネ",
+    "short_name": "トクダネ",
+    "description": "お得情報をまとめて表示するアプリ",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#F5F5F5",
+    "theme_color": "#FF6B35",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "images/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "images/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -1,0 +1,445 @@
+/* ===== リセット・基本設定 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #FF6B35;
+    --primary-light: #FFF3E0;
+    --accent: #4CAF50;
+    --blue: #2196F3;
+    --dark: #212121;
+    --gray-text: #666666;
+    --gray-light: #E0E0E0;
+    --gray-bg: #F5F5F5;
+    --white: #FFFFFF;
+    --radius: 12px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: var(--gray-bg);
+    color: var(--dark);
+    line-height: 1.6;
+    padding-top: 110px;
+    padding-bottom: 70px;
+    min-height: 100vh;
+}
+
+/* ===== ヘッダー ===== */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.header-title {
+    color: var(--white);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.header-location {
+    color: var(--white);
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* ===== フィルターバー ===== */
+.filter-bar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    height: 44px;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    z-index: 99;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.filter-select {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-light);
+    border-radius: 20px;
+    font-size: 12px;
+    background: var(--white);
+    color: var(--dark);
+    outline: none;
+}
+
+.filter-select:focus {
+    border-color: var(--primary);
+}
+
+/* ===== メインコンテンツ ===== */
+.main-content {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* ===== お得情報カード ===== */
+.deal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.deal-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+}
+
+.deal-card:active {
+    transform: scale(0.98);
+}
+
+.deal-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.deal-store-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.deal-distance {
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.deal-product {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.deal-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.deal-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.deal-original-price {
+    font-size: 12px;
+    color: var(--gray-text);
+    text-decoration: line-through;
+}
+
+.deal-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 4px;
+}
+
+.deal-badge-green {
+    background: var(--accent);
+}
+
+.deal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--gray-bg);
+}
+
+.deal-deadline {
+    font-size: 11px;
+    color: var(--gray-text);
+}
+
+.deal-source {
+    font-size: 10px;
+    color: var(--gray-text);
+}
+
+/* ===== カテゴリタブ ===== */
+.category-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.cat-tab {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    background: var(--white);
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cat-tab.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* ===== 店舗一覧 ===== */
+.store-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.store-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.store-info {
+    flex: 1;
+}
+
+.store-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 2px;
+}
+
+.store-category {
+    font-size: 11px;
+    color: var(--gray-text);
+}
+
+.store-deal-count {
+    font-size: 11px;
+    color: var(--blue);
+    margin-top: 2px;
+}
+
+.store-distance {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+/* ===== 設定画面 ===== */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.settings-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--dark);
+}
+
+.settings-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings-label {
+    font-size: 12px;
+    color: var(--gray-text);
+    font-weight: 600;
+}
+
+.settings-input {
+    padding: 10px 12px;
+    border: 1px solid var(--gray-light);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+}
+
+.settings-input:focus {
+    border-color: var(--primary);
+}
+
+.input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.input-row .settings-input {
+    flex: 1;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+}
+
+.btn-primary:active {
+    opacity: 0.8;
+}
+
+.btn-primary-sm {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.address-result {
+    font-size: 13px;
+    color: var(--accent);
+    padding: 8px;
+    background: #E8F5E9;
+    border-radius: 6px;
+    display: none;
+}
+
+.address-result.show {
+    display: block;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.checkbox-grid label {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggle-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+/* ===== 下部タブバー ===== */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--white);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--gray-light);
+    z-index: 100;
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: color 0.2s;
+    color: var(--gray-text);
+}
+
+.tab-item.active {
+    color: var(--primary);
+}
+
+.tab-icon {
+    font-size: 20px;
+}
+
+.tab-label {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* ===== レスポンシブ ===== */
+@media (min-width: 481px) {
+    .main-content {
+        padding: 16px 24px;
+    }
+}
+
+/* ===== PWA時のスタンドアロン対応 ===== */
+@media (display-mode: standalone) {
+    body {
+        padding-top: 110px;
+    }
+}

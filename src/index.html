@@ -1,1 +1,144 @@
-﻿<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><title>トクダネ</title></head><body><h1>トクダネ - 準備中</h1><p>環境構築完了</p></body></html>
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トクダネ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="header-title">🔥 トクダネ</h1>
+        </div>
+        <div class="header-right">
+            <span class="header-location">📍 未設定</span>
+        </div>
+    </header>
+
+    <!-- フィルターバー -->
+    <div class="filter-bar">
+        <select id="radius-filter" class="filter-select">
+            <option value="1">1km以内</option>
+            <option value="3" selected>3km以内</option>
+            <option value="5">5km以内</option>
+            <option value="10">10km以内</option>
+            <option value="0">制限なし</option>
+        </select>
+        <select id="sort-filter" class="filter-select">
+            <option value="distance">距離順</option>
+            <option value="newest">新着順</option>
+            <option value="discount">割引率順</option>
+            <option value="deadline">期限順</option>
+        </select>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content" id="main-content">
+        <!-- タイムライン（ホーム） -->
+        <section class="page active" id="page-home">
+            <div class="deal-list" id="deal-list">
+                <!-- カードはJSで動的生成 -->
+            </div>
+        </section>
+
+        <!-- カテゴリ -->
+        <section class="page" id="page-category">
+            <div class="category-tabs" id="category-tabs">
+                <button class="cat-tab active" data-cat="all">すべて</button>
+                <button class="cat-tab" data-cat="food">🛒食品</button>
+                <button class="cat-tab" data-cat="drug">💊日用品</button>
+                <button class="cat-tab" data-cat="apparel">👕衣料</button>
+                <button class="cat-tab" data-cat="restaurant">🍔外食</button>
+                <button class="cat-tab" data-cat="electronics">🎮家電</button>
+                <button class="cat-tab" data-cat="beauty">💄美容</button>
+            </div>
+            <div class="deal-list" id="category-deal-list"></div>
+        </section>
+
+        <!-- 店舗一覧 -->
+        <section class="page" id="page-stores">
+            <div class="store-list" id="store-list"></div>
+        </section>
+
+        <!-- 設定 -->
+        <section class="page" id="page-settings">
+            <div class="settings-container">
+                <div class="settings-section">
+                    <h2 class="settings-title">📍 住所設定</h2>
+                    <div class="settings-card">
+                        <label class="settings-label">郵便番号（ハイフンなし）</label>
+                        <div class="input-row">
+                            <input type="text" id="postal-code" class="settings-input" placeholder="1540024" maxlength="7">
+                            <button id="btn-search-address" class="btn-primary-sm">住所検索</button>
+                        </div>
+                        <div id="address-result" class="address-result"></div>
+                        <label class="settings-label">番地・建物名（任意）</label>
+                        <input type="text" id="address-detail" class="settings-input" placeholder="2-14-12 サンライズマンション301">
+                        <label class="settings-label">表示範囲</label>
+                        <select id="settings-radius" class="settings-input">
+                            <option value="0.5">500m</option>
+                            <option value="1">1km</option>
+                            <option value="3" selected>3km</option>
+                            <option value="5">5km</option>
+                            <option value="10">10km</option>
+                        </select>
+                        <button id="btn-save-settings" class="btn-primary">設定を保存</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-title">📂 表示カテゴリ</h2>
+                    <div class="settings-card">
+                        <div class="checkbox-grid">
+                            <label><input type="checkbox" checked value="food"> 食品・スーパー</label>
+                            <label><input type="checkbox" checked value="drug"> ドラッグストア</label>
+                            <label><input type="checkbox" checked value="convenience"> コンビニ</label>
+                            <label><input type="checkbox" value="apparel"> 衣料品</label>
+                            <label><input type="checkbox" checked value="restaurant"> 外食</label>
+                            <label><input type="checkbox" value="electronics"> 家電</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-title">⏰ 表示設定</h2>
+                    <div class="settings-card">
+                        <label class="toggle-label">
+                            <span>期限切れを非表示</span>
+                            <input type="checkbox" id="hide-expired" checked>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 下部タブバー -->
+    <nav class="tab-bar">
+        <button class="tab-item active" data-page="page-home">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">ホーム</span>
+        </button>
+        <button class="tab-item" data-page="page-category">
+            <span class="tab-icon">📂</span>
+            <span class="tab-label">カテゴリ</span>
+        </button>
+        <button class="tab-item" data-page="page-stores">
+            <span class="tab-icon">🏪</span>
+            <span class="tab-label">店舗</span>
+        </button>
+        <button class="tab-item" data-page="page-settings">
+            <span class="tab-icon">⚙️</span>
+            <span class="tab-label">設定</span>
+        </button>
+    </nav>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
