@@ -1,98 +1,4 @@
-// ===== トクダネ メインアプリ =====
-
-// --- サンプルデータ（後でSupabaseから取得に切り替え） ---
-const sampleDeals = [
-    {
-        id: 1,
-        storeName: "マツモトキヨシ 三軒茶屋店",
-        category: "drug",
-        product: "花王メリット シャンプー 詰替 340ml",
-        price: 298,
-        originalPrice: 498,
-        discountPercent: 40,
-        distance: 0.3,
-        deadline: "2026/6/15",
-        source: "メルマガ",
-        conditions: "お一人様2点まで"
-    },
-    {
-        id: 2,
-        storeName: "セブンイレブン 太子堂2丁目店",
-        category: "convenience",
-        product: "おにぎり全品",
-        price: 100,
-        originalPrice: null,
-        discountPercent: null,
-        distance: 0.5,
-        deadline: "2026/6/14",
-        source: "メルマガ",
-        conditions: "均一セール"
-    },
-    {
-        id: 3,
-        storeName: "イオン 駒沢店",
-        category: "food",
-        product: "国産豚ロース 100g",
-        price: 98,
-        originalPrice: 198,
-        discountPercent: 50,
-        distance: 1.2,
-        deadline: "2026/6/12",
-        source: "メルマガ",
-        conditions: "本日限り"
-    },
-    {
-        id: 4,
-        storeName: "ユニクロ 渋谷道玄坂店",
-        category: "apparel",
-        product: "感謝祭 全品",
-        price: null,
-        originalPrice: null,
-        discountPercent: 50,
-        distance: 2.8,
-        deadline: "2026/6/18",
-        source: "RSS",
-        conditions: "最大50%OFF"
-    },
-    {
-        id: 5,
-        storeName: "スターバックス 三軒茶屋店",
-        category: "restaurant",
-        product: "新作フラペチーノ 先行販売",
-        price: 690,
-        originalPrice: null,
-        discountPercent: null,
-        distance: 0.4,
-        deadline: "2026/6/20",
-        source: "メルマガ",
-        conditions: "リワード会員限定"
-    },
-    {
-        id: 6,
-        storeName: "ビックカメラ 渋谷店",
-        category: "electronics",
-        product: "AirPods Pro 第2世代",
-        price: 29800,
-        originalPrice: 39800,
-        discountPercent: 25,
-        distance: 3.1,
-        deadline: "2026/6/16",
-        source: "RSS",
-        conditions: "ポイント10%還元"
-    }
-];
-
-const sampleStores = [
-    { name: "マツモトキヨシ 三軒茶屋店", category: "ドラッグストア", distance: 0.3, dealCount: 3 },
-    { name: "セブンイレブン 太子堂2丁目店", category: "コンビニ", distance: 0.5, dealCount: 2 },
-    { name: "スターバックス 三軒茶屋店", category: "外食", distance: 0.4, dealCount: 1 },
-    { name: "ライフ 三軒茶屋店", category: "スーパー", distance: 0.8, dealCount: 5 },
-    { name: "サミット 若林店", category: "スーパー", distance: 1.0, dealCount: 4 },
-    { name: "イオン 駒沢店", category: "スーパー", distance: 1.2, dealCount: 8 },
-    { name: "業務スーパー 世田谷店", category: "スーパー", distance: 1.5, dealCount: 3 },
-    { name: "ユニクロ 渋谷道玄坂店", category: "衣料品", distance: 2.8, dealCount: 2 },
-    { name: "ビックカメラ 渋谷店", category: "家電", distance: 3.1, dealCount: 4 },
-];
+// ===== トクダネ メインアプリ（Supabase接続版） =====
 
 // --- ページ切り替え ---
 const tabItems = document.querySelectorAll('.tab-item');
@@ -101,48 +7,85 @@ const pages = document.querySelectorAll('.page');
 tabItems.forEach(tab => {
     tab.addEventListener('click', () => {
         const targetPage = tab.dataset.page;
-
-        // タブのアクティブ状態
         tabItems.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-
-        // ページ切り替え
         pages.forEach(p => p.classList.remove('active'));
         document.getElementById(targetPage).classList.add('active');
     });
 });
 
+// --- 距離計算（Haversine） ---
+function getDistanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+    return (2 * R * Math.asin(Math.sqrt(a)));
+}
+
+// --- ユーザー位置（デフォルト: 三軒茶屋駅） ---
+let userLat = 35.6437;
+let userLon = 139.6696;
+
+// --- Supabaseからデータ取得 ---
+async function fetchDeals() {
+    try {
+        const deals = await supabaseSelect('deals', 'select=*,stores(*)&order=created_at.desc');
+        return deals;
+    } catch (e) {
+        console.error('Deals取得エラー:', e);
+        return [];
+    }
+}
+
+async function fetchStores() {
+    try {
+        const stores = await supabaseSelect('stores', 'select=*');
+        return stores;
+    } catch (e) {
+        console.error('Stores取得エラー:', e);
+        return [];
+    }
+}
+
 // --- お得情報カード生成 ---
-function createDealCard(deal) {
+function createDealCard(deal, store) {
     const card = document.createElement('div');
     card.className = 'deal-card';
 
+    const storeName = store ? `${store.name} ${store.branch_name || ''}` : '不明';
+    const distance = store ? getDistanceKm(userLat, userLon, store.latitude, store.longitude).toFixed(1) : '?';
+
     let priceHTML = '';
-    if (deal.price) {
-        priceHTML = `<span class="deal-price">¥${deal.price.toLocaleString()}</span>`;
-        if (deal.originalPrice) {
-            priceHTML += `<span class="deal-original-price">¥${deal.originalPrice.toLocaleString()}</span>`;
+    if (deal.deal_price) {
+        priceHTML = `<span class="deal-price">¥${deal.deal_price.toLocaleString()}</span>`;
+        if (deal.original_price) {
+            priceHTML += `<span class="deal-original-price">¥${deal.original_price.toLocaleString()}</span>`;
         }
     }
 
     let badgeHTML = '';
-    if (deal.discountPercent) {
-        badgeHTML += `<span class="deal-badge">${deal.discountPercent}%OFF</span>`;
+    if (deal.discount_percent) {
+        badgeHTML += `<span class="deal-badge">${deal.discount_percent}%OFF</span>`;
     }
+
+    const endDate = deal.end_date ? `〜${deal.end_date}` : '';
 
     card.innerHTML = `
         <div class="deal-card-header">
-            <span class="deal-store-name">${deal.storeName}</span>
-            <span class="deal-distance">📍 ${deal.distance} km</span>
+            <span class="deal-store-name">${storeName}</span>
+            <span class="deal-distance">📍 ${distance} km</span>
         </div>
-        <div class="deal-product">${deal.product}</div>
+        <div class="deal-product">${deal.title}</div>
         <div class="deal-price-row">
             ${priceHTML}
             ${badgeHTML}
         </div>
         <div class="deal-footer">
-            <span class="deal-deadline">〜${deal.deadline}</span>
-            <span class="deal-source">${deal.source}</span>
+            <span class="deal-deadline">${endDate}</span>
+            <span class="deal-source">${deal.source || ''}</span>
         </div>
     `;
 
@@ -150,35 +93,59 @@ function createDealCard(deal) {
 }
 
 // --- カードリスト描画 ---
-function renderDeals(deals, containerId) {
+function renderDealCards(deals, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
+
+    if (deals.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">お得情報がありません</p>';
+        return;
+    }
+
     deals.forEach(deal => {
-        container.appendChild(createDealCard(deal));
+        const store = deal.stores || null;
+        container.appendChild(createDealCard(deal, store));
     });
 }
 
 // --- 店舗リスト描画 ---
-function renderStores(stores) {
+function renderStoreList(stores, deals) {
     const container = document.getElementById('store-list');
     container.innerHTML = '';
-    stores.sort((a, b) => a.distance - b.distance);
-    stores.forEach(store => {
+
+    // 各店舗のdeal件数を計算
+    const storeDeals = {};
+    deals.forEach(d => {
+        if (d.store_id) {
+            storeDeals[d.store_id] = (storeDeals[d.store_id] || 0) + 1;
+        }
+    });
+
+    // 距離計算してソート
+    const storesWithDistance = stores.map(s => ({
+        ...s,
+        distance: getDistanceKm(userLat, userLon, s.latitude, s.longitude),
+        dealCount: storeDeals[s.id] || 0
+    }));
+    storesWithDistance.sort((a, b) => a.distance - b.distance);
+
+    storesWithDistance.forEach(store => {
         const card = document.createElement('div');
         card.className = 'store-card';
         card.innerHTML = `
             <div class="store-info">
-                <div class="store-name">${store.name}</div>
-                <div class="store-category">${store.category}</div>
+                <div class="store-name">${store.name} ${store.branch_name || ''}</div>
+                <div class="store-category">${store.category || ''}</div>
                 <div class="store-deal-count">${store.dealCount}件のお得情報</div>
             </div>
-            <div class="store-distance">📍${store.distance} km</div>
+            <div class="store-distance">📍${store.distance.toFixed(1)} km</div>
         `;
         container.appendChild(card);
     });
 }
 
 // --- カテゴリタブ ---
+let allDeals = [];
 const catTabs = document.querySelectorAll('.cat-tab');
 catTabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -186,11 +153,11 @@ catTabs.forEach(tab => {
         tab.classList.add('active');
 
         const cat = tab.dataset.cat;
-        let filtered = sampleDeals;
+        let filtered = allDeals;
         if (cat !== 'all') {
-            filtered = sampleDeals.filter(d => d.category === cat);
+            filtered = allDeals.filter(d => d.category === cat);
         }
-        renderDeals(filtered, 'category-deal-list');
+        renderDealCards(filtered, 'category-deal-list');
     });
 });
 
@@ -212,8 +179,6 @@ document.getElementById('btn-search-address').addEventListener('click', async ()
             const resultEl = document.getElementById('address-result');
             resultEl.textContent = `✓ ${address}`;
             resultEl.classList.add('show');
-
-            // ヘッダーの地域名更新
             document.querySelector('.header-location').textContent = `📍 ${result.address2}${result.address3}`;
         } else {
             alert('住所が見つかりませんでした');
@@ -252,11 +217,19 @@ function loadSettings() {
 }
 
 // --- 初期化 ---
-function init() {
+async function init() {
     loadSettings();
-    renderDeals(sampleDeals, 'deal-list');
-    renderDeals(sampleDeals, 'category-deal-list');
-    renderStores(sampleStores);
+
+    // Supabaseからデータ取得
+    allDeals = await fetchDeals();
+    const stores = await fetchStores();
+
+    // 画面描画
+    renderDealCards(allDeals, 'deal-list');
+    renderDealCards(allDeals, 'category-deal-list');
+    renderStoreList(stores, allDeals);
+
+    console.log(`✅ ${allDeals.length}件のお得情報、${stores.length}件の店舗を読み込みました`);
 }
 
 init();
