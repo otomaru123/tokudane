@@ -443,3 +443,5 @@ body {
         padding-top: 110px;
     }
 }
+.deal-description {font-size:11px;color:#666;margin-bottom:6px;line-height:1.4;}
+.deal-conditions {font-size:10px;color:#2196F3;background:#E3F2FD;padding:4px 8px;border-radius:4px;margin-top:4px;}
